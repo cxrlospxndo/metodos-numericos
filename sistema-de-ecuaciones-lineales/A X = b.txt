@@ -1,0 +1,247 @@
+Resolver : 
+  A * X = b
+Datos :
+  A = [4 -1 -1 -1 -1; -1 2 0 0 0; -1 0 3 1 1; -1 0 1 4 2; -1 0 1 2 5]
+  b = [20 20 20 20 20]'
+  % para los metodos iterativos
+  xo = [0 0 0 0 0]' 
+  tol = 0.00001
+
+################################################################################
+METODOS DE SOLUCION DE SISTEMAS LINEALES A * X = b
+################################################################################
+1)FACTORIZACION DE MATRICES (L*U = a)
+################################################################################
+a) Doolittle
+##################################################
+[L, U] = lablu(A) % diagonal de 1's en L
+##################################################
+b) Crout 
+##################################################
+[L,U] = crout(A) % diagonal de 1's en U
+##################################################
+*** Para una matriz A = A'
+  Si por Doolittle se tiene [L, U] = lablu(A)
+  Para Crout su factorizacion LU sera [U', L']
+*** Demostracion :
+  (L*U) = A
+  => tomando transpuesta
+  (L*U)' = U' * L' = A', por condicion A = A'
+  => U' * L' = A, se observa que la diagonal de 1's esta en la matriz L' 
+##################################################
+Con esta factorizacion se resuelve :
+L * U = A
+L * U * X = b
+
+L * Y = b se resuelve para Y con Y = L\b
+U * X = Y se resuelve para X con X = U\Y
+
+Donde X es la solucion del sistema lineal A * X = b
+##################################################
+>> [L,U] = lablu(A,b)
+ L * Y = b , resolviendo para Y :
+   20.0000
+   25.0000
+   28.5714
+   21.0526
+   11.9403
+
+ U * X = Y , resolviendo para X :
+   13.2046
+   16.6023
+    8.4942
+    4.6332
+    3.0888
+
+L =
+
+    1.0000         0         0         0         0
+   -0.2500    1.0000         0         0         0
+   -0.2500   -0.1429    1.0000         0         0
+   -0.2500   -0.1429    0.2632    1.0000         0
+   -0.2500   -0.1429    0.2632    0.4328    1.0000
+
+U =
+
+    4.0000   -1.0000   -1.0000   -1.0000   -1.0000
+         0    1.7500   -0.2500   -0.2500   -0.2500
+         0         0    2.7143    0.7143    0.7143
+         0         0         0    3.5263    1.5263
+         0         0         0         0    3.8657
+##################################################
+>> [L,U] = crout(A,b)
+ L * Y = b , resolviendo para Y :
+    5.0000
+   14.2857
+   10.5263
+    5.9701
+    3.0888
+
+ U * X = Y , resolviendo para X :
+   13.2046
+   16.6023
+    8.4942
+    4.6332
+    3.0888
+
+L =
+
+    4.0000         0         0         0         0
+   -1.0000    1.7500         0         0         0
+   -1.0000   -0.2500    2.7143         0         0
+   -1.0000   -0.2500    0.7143    3.5263         0
+   -1.0000   -0.2500    0.7143    1.5263    3.8657
+
+U =
+
+    1.0000   -0.2500   -0.2500   -0.2500   -0.2500
+         0    1.0000   -0.1429   -0.1429   -0.1429
+         0         0    1.0000    0.2632    0.2632
+         0         0         0    1.0000    0.4328
+         0         0         0         0    1.0000
+##################################################
+c) Cholesky
+##################################################
+cholesky(A) SOLO se aplica para una matriz A, que es positiva, simetrica y real
+
+[L, LT] = cholesky(A)
+
+Se verifica que L*LT = A, LT = L'
+##################################################
+Con esta factorizacion se resuelve :
+
+L * LT = A
+L * LT * X = b
+
+L * Y = b se resuelve para Y con Y = L\b
+LT * X = Y se resuelve para X con X = LT\Y
+
+Donde X es la solucion del sistema lineal A * X = b
+##################################################
+>> [L, LT]=cholesky(A,b)
+ L * Y = b , resolviendo para Y :
+   10.0000
+   18.8982
+   17.3422
+   11.2110
+    6.0730
+
+ LT * X = Y , resolviendo para X :
+   13.2046
+   16.6023
+    8.4942
+    4.6332
+    3.0888
+
+L =
+
+    2.0000         0         0         0         0
+   -0.5000    1.3229         0         0         0
+   -0.5000   -0.1890    1.6475         0         0
+   -0.5000   -0.1890    0.4336    1.8778         0
+   -0.5000   -0.1890    0.4336    0.8128    1.9661
+
+LT =
+
+    2.0000   -0.5000   -0.5000   -0.5000   -0.5000
+         0    1.3229   -0.1890   -0.1890   -0.1890
+         0         0    1.6475    0.4336    0.4336
+         0         0         0    1.8778    0.8128
+         0         0         0         0    1.9661
+################################################################################
+2) METODOS ITERATIVOS
+################################################################################
+a) Jacoby
+##################################################
+La matriz A debe ser diagonalmente dominante
+##################################################
+b) Gauss-Seidel
+##################################################
+La matriz A, debe ser (diagonalmente dominante o simetrica) y positiva
+##################################################
+% Ambos metodos generan un excel 'jacobilab.xls' y 'gauss_seidel.xls' respectivamente, con todas las iteraciones
+
+>> [x1,it]=jacobilab(A,b,xo,tol)
+        x(1)   x(2)     x(3)      x(4)
+       -------------------------------
+         0    5.0000   11.4167   10.5208
+         0   10.0000   12.5000   15.7083
+         0    6.6667    5.3333    9.0556
+         0    5.0000    2.5833    5.6875
+         0    4.0000    1.6667    4.1833
+
+Radio Espectral : p(M) = 0.91492
+
+x1 =
+
+   13.2046
+   16.6023
+    8.4942
+    4.6332
+    3.0888
+
+
+it =
+
+   145
+##################################################
+>> [xgs,itgs]=gauss_seidel(A,b,xo,tol)
+        x(1)   x(2)     x(3)      x(4)
+       -------------------------------
+         0    5.0000   11.6667   13.0035
+         0   12.5000   15.8333   16.5017
+         0    8.3333    8.6111    8.4780
+         0    4.1667    4.9306    4.8119
+         0    1.6667    2.6389    2.9803
+
+Radio Espectral : p(M) = 0.23224
+
+xgs =
+
+   13.2046
+   16.6023
+    8.4942
+    4.6332
+    3.0888
+
+
+itgs =
+
+    12
+% Ambos metodos pueden retornar las matrices M y c de 
+% X(k) = M * X(k-1) + c
+% [x1,it, M, c] = jacobilab(A,b,xo,tol)
+% [xgs,itgs, M, c] = gauss_seidel(A,b,xo,tol)
+##################################################
+Ley de formacion de la k-esima iteracion a partir de la iteracion k-1
+##################################################
+*** A * X = b
+*** Jacobi
+
+  A = D + L + U % matriz diagonal, lower y upper
+
+  *** X(k) = M * X(k-1) + c
+
+  M = -inv(D)*(L + U)
+  c = inv(D)*b
+
+*** Gauss-Seidel
+  
+  A = D + L + U
+
+  *** X(k) = M * X(k-1) + c
+  
+  M = -inv(D + L)*U
+  c = inv(D + L)*b
+##################################################
+En matlab
+L = tril(A, -1);
+U = triu(A, 1);
+D = A - L - U;
+##################################################
+CONVERGENCIA
+##################################################
+Si p(M) < 1, El metodo iterativo converge 
+% p(M) radio espectral de M
+% En matlab se calcula con max(abs(eig(M)))
+##################################################
