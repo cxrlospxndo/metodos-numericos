@@ -13,7 +13,7 @@ while (norm(x1-xo, inf)>tol)
     xo=x1;
     x1=M*xo+c;
     it=it+1;
-	gg(:, it) = xo;  	  
+    gg(:, it) = xo;  	  
 end
 xj = x1;
 itj = it;
